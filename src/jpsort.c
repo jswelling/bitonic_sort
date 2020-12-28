@@ -57,7 +57,7 @@ static void se_push( int partner, Op op, Dir dir, StackElement** stack )
 {
   StackElement* newSE= NULL;
   if (!(newSE=(StackElement*)malloc(sizeof(StackElement)))) {
-    fprintf(stderr,"Unable to allocate %d bytes!\n",sizeof(StackElement));
+    fprintf(stderr,"Unable to allocate %ld bytes!\n",sizeof(StackElement));
     MPI_Abort(MPI_COMM_WORLD,-1);
   }
   newSE->partner= partner;
@@ -588,11 +588,11 @@ void jpSort(MPI_Comm comm,
   void* tmp= NULL;
 
   if (!(scratch=(void*)malloc(nmemb*size))) {
-    fprintf(stderr,"unable to allocate %d bytes!\n",((nmemb+1)/2)*size);
+    fprintf(stderr,"unable to allocate %ld bytes!\n",((nmemb+1)/2)*size);
     MPI_Abort(MPI_COMM_WORLD,-1);
   }
   if (!(tmp=(void*)malloc(size))) {
-    fprintf(stderr,"unable to allocate %d bytes!\n",size);
+    fprintf(stderr,"unable to allocate %ld bytes!\n",size);
     MPI_Abort(MPI_COMM_WORLD,-1);
   }
 
