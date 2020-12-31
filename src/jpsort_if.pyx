@@ -39,6 +39,8 @@ def pyjpSort(Comm comm,
     assert array.dtype == np.float64, 'Only float64 data is supported so far'
     cdef size_t nmemb = array.shape[0]
     cdef size_t size = array.itemsize
+    for idx in range(1,array.ndim):
+        size *= array.shape[idx]
     cdef MPI_Comm mpi_comm = comm.ob_mpi
     return jpSort(mpi_comm, <void *>array.data, nmemb, size, compare_float64)
 
