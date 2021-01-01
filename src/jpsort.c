@@ -83,8 +83,7 @@ static void bitonicTest(void* base, size_t nmemb, size_t size,
   int nChanges= 0;
   int prev= 0;
   int first= 1;
-  int dir= 0;
-  int i;
+  unsigned int i;
   void* v1;
   void* v2;
   for (i=1; i<nmemb; i++) {
@@ -94,7 +93,6 @@ static void bitonicTest(void* base, size_t nmemb, size_t size,
     if (first) {
       if (result != 0) {
 	first= 0;
-	dir= result;
       }
       prev= result;
     }
@@ -116,9 +114,8 @@ static void merge_ascending_uphill(MPI_Comm comm, void* base,
 {
   int rc;
   MPI_Status status;
-  int i;
+  unsigned int i;
   void* topHalf= (void*)((char*)base + ((nmemb+1)/2)*size);
-  int count;
 
   /* I will shuffle the top half of the buffer */
   /* Catch top half of partner buf */
@@ -157,7 +154,7 @@ static void merge_ascending_downhill(MPI_Comm comm, void* base,
 {
   int rc;
   MPI_Status status;
-  int i;
+  unsigned int i;
   void* topHalf= (void*)((char*)base + ((nmemb+1)/2)*size);
 
   /* I will shuffle the bottom half of the buffer */
@@ -198,7 +195,7 @@ static void merge_descending_uphill(MPI_Comm comm, void* base,
 {
   int rc;
   MPI_Status status;
-  int i;
+  unsigned int i;
   void* topHalf= (void*)((char*)base + ((nmemb+1)/2)*size);
 
   /* I will shuffle the top half of the buffer */
@@ -238,7 +235,7 @@ static void merge_descending_downhill(MPI_Comm comm, void* base,
 {
   int rc;
   MPI_Status status;
-  int i;
+  unsigned int i;
   void* topHalf= (void*)((char*)base + ((nmemb+1)/2)*size);
 
   /* I will shuffle the bottom half of the buffer */
@@ -525,10 +522,7 @@ static void generateBitonicSortPattern( int myRank, int nGhosts, int commSize,
 static void generateFullPattern(int commSize, int nLevels, int nGhosts, 
 				int myRank, StackElement** pRealStack)
 {
-  int myGhostedRank= myRank+nGhosts;
   StackElement* stack= NULL;
-  int i;
-  int groupSize;
 
   /* This routine generates a full Bitonic sort pattern (ascending
    * order).
@@ -581,7 +575,6 @@ void jpSort(MPI_Comm comm,
   int myRank;
   int nLevels;
   int nGhosts;
-  int i;
   int firstSort= 1;
   StackElement* stack= NULL;
   void* scratch= NULL;
@@ -613,7 +606,6 @@ void jpSort(MPI_Comm comm,
     int partner= stack->partner;
     Op op= stack->op;
     Dir dir= stack->dir;
-    Dir otherDir= (dir==ASCENDING)?DESCENDING:ASCENDING;
     int uphillFlag= (partner<myRank);
     se_pop(&stack);
 #if DEBUG
