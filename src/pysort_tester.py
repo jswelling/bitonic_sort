@@ -3,8 +3,10 @@ from mpi4py import MPI
 import jpsort_if
 import numpy as np
 import argparse
-from pprint import pprint
 import sys
+
+DEFAULT_COUNT = 1000000
+
 
 def mpiabort_excepthook(type, value, traceback):
     """
@@ -15,17 +17,19 @@ def mpiabort_excepthook(type, value, traceback):
     MPI.COMM_WORLD.Abort()
     sys.__excepthook__(type, value, traceback)
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c','--count', help='Number of values in each local buffer',
-                        type=int, default=1000000)
+    parser.add_argument('-c','--count',
+                        help=('Number of values in each local buffer'
+                              ' (default {})'.format(DEFAULT_COUNT)),
+                        type=int,
+                        default=DEFAULT_COUNT)
     parser.add_argument('--seed', help='set random seed', type=int)
     try:
         args = parser.parse_args()
     except SystemExit as e:
-        print(f'exception {type(e)}')
-        comm.abort()
-    sys.stderr.write('point 2\n')
+        raise RuntimeError()  # which will trigger the exception handler
     return {'count': args.count, 'seed': args.seed}
 
 
@@ -48,7 +52,16 @@ def main():
     if args['seed']:
         np.random.seed(seed=args['seed'] + rank)
     arr = np.random.random((args['count'],1))
+    if rank == 0:
+        time_start = MPI.Wtime()
+    else:
+        time_start = None
     jpsort_if.pyjpSort(MPI.COMM_WORLD, arr)
+    if rank == 0:
+        time_sort = MPI.Wtime() - time_start
+        print(f'rank {rank}: total sort time: {time_sort}')
+    else:
+        time_sort = None
 
     # Verify the arrays were sorted globally
     success = is_sorted(arr)
