@@ -20,7 +20,7 @@ def mpiabort_excepthook(type, value, traceback):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c','--count',
+    parser.add_argument('-c', '--count',
                         help=('Number of values in each local buffer'
                               ' (default {})'.format(DEFAULT_COUNT)),
                         type=int,
@@ -28,12 +28,13 @@ def parse_args():
     parser.add_argument('--seed', help='set random seed', type=int)
     try:
         args = parser.parse_args()
-    except SystemExit as e:
+    except SystemExit:
         raise RuntimeError()  # which will trigger the exception handler
     return {'count': args.count, 'seed': args.seed}
 
 
-is_sorted = lambda a: bool(np.all(a[:-1] <= a[1:]))  # Thanks stackoverflow!
+def is_sorted(a):
+    return bool(np.all(a[:-1] <= a[1:]))  # Thanks stackoverflow!
 
 
 def main():
@@ -51,7 +52,7 @@ def main():
 
     if args['seed']:
         np.random.seed(seed=args['seed'] + rank)
-    arr = np.random.random((args['count'],1))
+    arr = np.random.random((args['count'], 1))
     if rank == 0:
         time_start = MPI.Wtime()
     else:
